@@ -9,13 +9,19 @@ export default createGlobalStyle`
 
 :root {
     --white: #FFF;
-    --gray-100: #E1E1E6;
-    --gray-300: #A8A8B3;
-    --gray-700: #29292E;
-    --gray-800: #1F2729;
-    --gray-900: #121214;
-    --cyan-500: #61DAFB;
-    --yellow-500: #EBA417;
+
+    --gray-50: #F7F8FA;
+    --gray-100: #E6E8EB;
+    --gray-200: #AFB2B1;
+    --gray-500: #808080;
+    --gray-800: #494D4B;
+
+    --green-500: #04D361;
+
+    --purple-300: #9F75FF;
+    --purple-400: #9164FA;
+    --purple-500: #8257E5;
+    --purple-800: #6F48C9;
 }
 
 @media (max-width: 1080px) {
@@ -31,16 +37,30 @@ export default createGlobalStyle`
 }
 
 body {
-    background: var(--gray-900);
+    background: var(--gray-50);
     color: var(--white);
 }
 
 body,
 input,
 textarea,
-select,
 button {
-    font-family: 'Roboto Slab', Arial, Helvetica, sans-serif;
+    font: 500 1rem "Inter", sans-serif;
+    color: var(--gray-500);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    font-family: "Lexend", sans-serif;
+    color: var(----gray-800);
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
 }
 
 button {
