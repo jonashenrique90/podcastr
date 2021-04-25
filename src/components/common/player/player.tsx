@@ -8,7 +8,7 @@ import { PlayerContainer, EmptyPlayer, PlayerFooter, Progress, EmptySlider, Play
 
 
 const Player: FC = () => {
-    const { episodeList, currentEpisodeIndex, isPlaying, togglePlay, setPlayingState } = useContext(PlayerContext);
+    const { episodeList, currentEpisodeIndex, isPlaying, togglePlay, setPlayingState, playNext, playPrevious } = useContext(PlayerContext);
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const episode = episodeList[currentEpisodeIndex];
@@ -76,7 +76,7 @@ const Player: FC = () => {
                     <button type="button" disabled={!episode}>
                         <img src="/podcastr/shuffle.svg" alt="Embaralhar" />
                     </button>
-                    <button type="button" disabled={!episode}>
+                    <button type="button" onClick={playPrevious} disabled={!episode}>
                         <img src="/podcastr/play-previous.svg" alt="Tocar anterior" />
                     </button>
                     <button type="button" className="playButton" disabled={!episode} onClick={togglePlay}>
@@ -86,7 +86,7 @@ const Player: FC = () => {
                             <img src="/podcastr/play.svg" alt="Tocar" />
                         )}
                     </button>
-                    <button type="button" disabled={!episode}>
+                    <button type="button" disabled={!episode} onClick={playNext}>
                         <img src="/podcastr/play-next.svg" alt="Tocar pŕxima" />
                     </button>
                     <button type="button" disabled={!episode}>

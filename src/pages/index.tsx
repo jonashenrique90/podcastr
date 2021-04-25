@@ -17,7 +17,8 @@ interface EpisodesProps {
 
 const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
 
-  const { play } = useContext(PlayerContext);
+  const { playList } = useContext(PlayerContext);
+  const episodeList = [...latestEpisodes, ...allEpisodes];
   return (
     <>
       <Head>
@@ -27,7 +28,7 @@ const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
         <LatestEpisodes>
           <h2>Últimos Lançamentos</h2>
           <ul>
-            {latestEpisodes.map(episode => {
+            {latestEpisodes.map((episode, index) => {
               return (
                 <li key={episode.id}>
                   <Image
@@ -45,7 +46,10 @@ const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
                     <span>{episode.publishedAt}</span>
                     <span>{episode.duration}</span>
                   </EpisodeDetails>
-                  <button type="button" onClick={() => play(episode)}>
+                  <button
+                    type="button"
+                    onClick={() => playList(episodeList, index)}
+                  >
                     <img src="/podcastr/play-green.svg" alt="Tocar episodio" />
                   </button>
                 </li>
@@ -65,7 +69,7 @@ const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
               <th></th>
             </thead>
             <tbody>
-              {allEpisodes.map(episode => {
+              {allEpisodes.map((episode, index) => {
                 return (
                   <tr key={episode.id}>
                     <td>
@@ -86,7 +90,10 @@ const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
                     <td>{episode.publishedAt}</td>
                     <td>{episode.duration}</td>
                     <td>
-                      <button type="button">
+                      <button
+                        type="button"
+                        onClick={() => playList(episodeList, index + latestEpisodes.length)}
+                      >
                         <img src="/podcastr/play-green.svg" alt="Tocar episodio" />
                       </button>
                     </td>
