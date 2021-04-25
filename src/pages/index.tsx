@@ -3,13 +3,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import EpisodeProps from '../lib/utils/episodes';
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from '../services/api';
 import { convertDurationToTimeString } from '../lib/utils/convertDurationToTimeString';
 import { HomePageContainer, LatestEpisodes, AllEpisodes, EpisodeDetails } from '../styles/HomePage';
-import { PlayerContext } from '../hooks/PlayerContext';
+import { usePlayer } from '../hooks/PlayerContext';
 interface EpisodesProps {
   latestEpisodes: EpisodeProps[];
   allEpisodes: EpisodeProps[];
@@ -17,7 +17,7 @@ interface EpisodesProps {
 
 const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
 
-  const { playList } = useContext(PlayerContext);
+  const { playList } = usePlayer();
   const episodeList = [...latestEpisodes, ...allEpisodes];
   return (
     <>
@@ -88,7 +88,7 @@ const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
                     </td>
                     <td>{episode.members}</td>
                     <td>{episode.publishedAt}</td>
-                    <td>{episode.duration}</td>
+                    <td>{convertDurationToTimeString(episode.duration)}</td>
                     <td>
                       <button
                         type="button"
@@ -129,7 +129,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       publishedAt: format(parseISO(episode.published_at), 'd MMM yyyy', {
         locale: ptBR,
       }),
-      duration: convertDurationToTimeString(Number(episode.file.duration)),
+      duration: episode.file.duration,
       description: episode.description,
       url: episode.file.url,
     }

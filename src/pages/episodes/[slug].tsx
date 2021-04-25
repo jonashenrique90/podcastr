@@ -1,19 +1,22 @@
 import { FC } from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
-import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import EpisodeProps from '../../lib/utils/episodes';
 import { api } from '../../services/api';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { convertDurationToTimeString } from '../../lib/utils/convertDurationToTimeString';
 import { EpisodeContainer, ThumbnailContainer, Description } from '../../styles/EpisodeStyle';
+import { usePlayer } from '../../hooks/PlayerContext';
 
 interface EpisodeProp {
     episode: EpisodeProps;
 }
 
 const Episode: FC<EpisodeProp> = ({ episode }) => {
+    const { play } = usePlayer();
+    console.log(episode);
 
     return (
         <EpisodeContainer>
@@ -30,7 +33,7 @@ const Episode: FC<EpisodeProp> = ({ episode }) => {
                     alt={episode.title}
                     objectFit="cover"
                 />
-                <button type="button">
+                <button type="button" onClick={() => play(episode)}>
                     <img src="/podcastr/play.svg" alt="Tocar episódio" />
                 </button>
             </ThumbnailContainer>
@@ -38,7 +41,7 @@ const Episode: FC<EpisodeProp> = ({ episode }) => {
                 <h1>{episode.title}</h1>
                 <span>{episode.members}</span>
                 <span>{episode.publishedAt}</span>
-                <span>{episode.duration}</span>
+                <span>{convertDurationToTimeString(episode.duration)}</span>
             </header>
             <Description
                 dangerouslySetInnerHTML={{ __html: episode.description }}
@@ -50,56 +53,8 @@ const Episode: FC<EpisodeProp> = ({ episode }) => {
 
 export default Episode
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//     const { slug } = context.params;
-//     const { data } = await api.get(`episodes/${slug}`)
-
-//     const episode = {
-//         id: data.id,
-//         title: data.title,
-//         thumbnail: data.thumbnail,
-//         members: data.members,
-//         publishedAt: format(parseISO(data.published_at), 'd MMM yyyy', {
-//             locale: ptBR,
-//         }),
-//         duration: convertDurationToTimeString(Number(data.file.duration)),
-//         description: data.description,
-//         url: data.file.url,
-//     }
-
-//     return {
-//         props: {
-//             episode,
-//         }
-//     }
-// }
-
-export const getStaticPaths: GetStaticPaths = async () => {
-    const { data } = await api.get('episodes', {
-        params: {
-            _limit: 2,
-            _sort: 'published_at',
-            _order: 'desc'
-        }
-    })
-
-    const paths = data.map(episode => {
-        return {
-            params: {
-                slug: episode.id
-            }
-        }
-    });
-
-    return {
-        paths,
-        fallback: 'blocking'
-    }
-}
-
-// Only in production
-export const getStaticProps: GetStaticProps = async (ctx) => {
-    const { slug } = ctx.params;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { slug } = context.params;
     const { data } = await api.get(`episodes/${slug}`)
 
     const episode = {
@@ -110,7 +65,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         publishedAt: format(parseISO(data.published_at), 'd MMM yyyy', {
             locale: ptBR,
         }),
-        duration: convertDurationToTimeString(Number(data.file.duration)),
+        duration: data.file.duration,
         description: data.description,
         url: data.file.url,
     }
@@ -118,7 +73,55 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     return {
         props: {
             episode,
-        },
-        revalidate: 60 * 60 * 8,
+        }
     }
 }
+
+// export const getStaticPaths: GetStaticPaths = async () => {
+//     const { data } = await api.get('episodes', {
+//         params: {
+//             _limit: 2,
+//             _sort: 'published_at',
+//             _order: 'desc'
+//         }
+//     })
+
+//     const paths = data.map(episode => {
+//         return {
+//             params: {
+//                 slug: episode.id
+//             }
+//         }
+//     });
+
+//     return {
+//         paths,
+//         fallback: 'blocking'
+//     }
+// }
+
+// Only in production
+// export const getStaticProps: GetStaticProps = async (ctx) => {
+//     const { slug } = ctx.params;
+//     const { data } = await api.get(`episodes/${slug}`)
+
+//     const episode = {
+//         id: data.id,
+//         title: data.title,
+//         thumbnail: data.thumbnail,
+//         members: data.members,
+//         publishedAt: format(parseISO(data.published_at), 'd MMM yyyy', {
+//             locale: ptBR,
+//         }),
+//         duration: data.file.duration,
+//         description: data.description,
+//         url: data.file.url,
+//     }
+
+//     return {
+//         props: {
+//             episode,
+//         },
+//         revalidate: 60 * 60 * 8,
+//     }
+// }
