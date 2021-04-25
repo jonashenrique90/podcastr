@@ -1,13 +1,13 @@
 import { FC } from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
-import { GetServerSideProps, GetStaticPaths } from 'next';
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
 import EpisodeProps from '../../lib/utils/episodes';
 import { api } from '../../services/api';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { convertDurationToTimeString } from '../../lib/utils/convertDurationToTimeString';
-import { EpisodeContainer, ThumbnailContainer, Description } from './styles';
+import { EpisodeContainer, ThumbnailContainer, Description } from '../../styles/EpisodeStyle';
 
 interface EpisodeProp {
     episode: EpisodeProps;
@@ -50,8 +50,56 @@ const Episode: FC<EpisodeProp> = ({ episode }) => {
 
 export default Episode
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { slug } = context.params;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//     const { slug } = context.params;
+//     const { data } = await api.get(`episodes/${slug}`)
+
+//     const episode = {
+//         id: data.id,
+//         title: data.title,
+//         thumbnail: data.thumbnail,
+//         members: data.members,
+//         publishedAt: format(parseISO(data.published_at), 'd MMM yyyy', {
+//             locale: ptBR,
+//         }),
+//         duration: convertDurationToTimeString(Number(data.file.duration)),
+//         description: data.description,
+//         url: data.file.url,
+//     }
+
+//     return {
+//         props: {
+//             episode,
+//         }
+//     }
+// }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    const { data } = await api.get('episodes', {
+        params: {
+            _limit: 2,
+            _sort: 'published_at',
+            _order: 'desc'
+        }
+    })
+
+    const paths = data.map(episode => {
+        return {
+            params: {
+                slug: episode.id
+            }
+        }
+    });
+
+    return {
+        paths,
+        fallback: 'blocking'
+    }
+}
+
+// Only in production
+export const getStaticProps: GetStaticProps = async (ctx) => {
+    const { slug } = ctx.params;
     const { data } = await api.get(`episodes/${slug}`)
 
     const episode = {
@@ -70,27 +118,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
         props: {
             episode,
-        }
+        },
+        revalidate: 60 * 60 * 8,
     }
 }
-
-// export const getStaticPaths: GetStaticPaths = async () => {
-//     return {
-//         paths: [],
-//         fallback: 'blocking'
-//     }
-// }
-
-// Only in production
-// export async function getStaticProps() {
-
-//   const response = await fetch('http://localhost:3333/episodes')
-//   const data = await response.json()
-
-//   return {
-//     props: {
-//       episodes: data,
-//     },
-//     revalidate: 60 * 60 * 8,
-//   }
-// }

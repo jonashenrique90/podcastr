@@ -3,12 +3,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import EpisodeProps from '../lib/utils/episodes';
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { api } from '../services/api';
 import { convertDurationToTimeString } from '../lib/utils/convertDurationToTimeString';
 import { HomePageContainer, LatestEpisodes, AllEpisodes, EpisodeDetails } from '../styles/HomePage';
+import { PlayerContext } from '../hooks/PlayerContext';
 interface EpisodesProps {
   latestEpisodes: EpisodeProps[];
   allEpisodes: EpisodeProps[];
@@ -16,6 +17,7 @@ interface EpisodesProps {
 
 const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
 
+  const { play } = useContext(PlayerContext);
   return (
     <>
       <Head>
@@ -43,7 +45,7 @@ const Home: FC<EpisodesProps> = ({ latestEpisodes, allEpisodes }) => {
                     <span>{episode.publishedAt}</span>
                     <span>{episode.duration}</span>
                   </EpisodeDetails>
-                  <button type="button">
+                  <button type="button" onClick={() => play(episode)}>
                     <img src="/podcastr/play-green.svg" alt="Tocar episodio" />
                   </button>
                 </li>

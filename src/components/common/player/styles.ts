@@ -36,6 +36,28 @@ export const PlayerContainer = styled.div`
     }
 `;
 
+export const CurrentEpisode = styled.div`
+    text-align: center;
+
+    img {
+        border-radius: 1.5rem;
+    }
+
+    strong {
+        display: block;
+        margin-top: 2rem;
+        font: 600 1.25rem "Lexend", sans-serif;
+        line-height: 1.75rem;
+    }
+
+    span {
+        display: block;
+        margin-top: 1rem;
+        opacity: 0.5;
+        line-height: 1.5rem;
+    }
+`;
+
 export const EmptyPlayer = styled.div`
     width: 100%;
     height: 20rem;
@@ -91,12 +113,25 @@ export const PlayerButtons = styled.div`
         background: transparent;
         border: 0;
         font-size: 0;
+        transition: filter 0.2s;
+
+        &:disabled {
+            cursor: default;
+        }
+
+        &:hover:not(:disabled) {
+            filter: brightness(0.8)
+        }
 
         &.playButton {
             width: 4rem;
             height: 4rem;
             border-radius: 1rem;
             background: var(--purple-400);
+
+            &:hover {
+                filter: brightness(0.95)
+            }
         }
     }
 `;
